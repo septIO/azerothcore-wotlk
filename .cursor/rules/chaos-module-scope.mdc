@@ -1,0 +1,33 @@
+---
+description: Stay inside modules/chaos and look up AzerothCore docs before guessing
+alwaysApply: true
+---
+
+# Chaos module scope
+
+All work happens in `modules/chaos`. Do not create, edit, delete, or commit files outside that directory.
+
+Reading the core (headers, scripts, `modules/how_to_make_a_module.md`) is fine when you need an existing API. Changing it is not.
+
+If a task cannot be done from inside the module, stop and ask before touching anything else.
+
+## Where changes go
+
+- C++: `modules/chaos/src/` (`Chaos_loader.cpp`, `Chaos_SC.cpp`, and new files next to them)
+- Config: `modules/chaos/conf/`
+- SQL: `modules/chaos/data/sql/db-auth/`, `db-characters/`, or `db-world/`
+
+```text
+❌ BAD  src/server/game/Entities/Player/Player.cpp
+❌ BAD  data/sql/updates/pending_db_world/some_change.sql
+✅ GOOD modules/chaos/src/Chaos_SC.cpp
+✅ GOOD modules/chaos/data/sql/db-world/my_feature.sql
+```
+
+## When you need help
+
+Look it up on the AzerothCore documentation index before inventing APIs, hooks, or SQL layout:
+
+https://www.azerothcore.org/wiki/documentation-index
+
+Use the page that matches the task (module creation, hooks, SmartAI, database). Do not guess a core function or hook that the docs or an existing module do not show.

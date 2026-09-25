@@ -1,0 +1,26 @@
+---
+description: After a finished change, rebuild and restart by running rebuild-and-restart.sh. Never run it when the only files changed are .lua.
+alwaysApply: true
+---
+
+# Rebuild and restart when the code is ready
+
+When an implementation is finished and the code is ready to build, run `rebuild-and-restart.sh` from the repo root with Git Bash before reporting it done. That script stops the servers, rebuilds, refreshes `chaos.conf`, and starts the servers.
+
+Never run this script if the only files you changed are `.lua` files. Lua scripts load without a rebuild, so a Lua-only change is finished once the files are saved.
+
+Do not run it for unfinished work, a change you expect to fail the build, or a task that does not need a rebuild (docs, rules, or questions only).
+
+```powershell
+& "C:\Program Files\Git\bin\bash.exe" "C:/AzerothCore/rebuild-and-restart.sh"
+```
+
+```text
+❌ Run the script while the change is still incomplete
+❌ Run the script when the only changes are .lua files
+❌ cmake, or a rebuild by hand instead of the script
+✅ Run the script once the change is ready to compile
+✅ Skip the script when every changed file ends in .lua
+```
+
+If the script fails, stop. Do not start the servers another way.
