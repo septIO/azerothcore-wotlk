@@ -13870,7 +13870,9 @@ LootItem* Player::StoreLootItem(uint8 lootSlot, Loot* loot, InventoryResult& msg
 
     // Xinef: exploit protection, dont allow to loot normal items if player is not master loot and not below loot threshold
     // Xinef: only quest, ffa and conditioned items
-    if (!item->is_underthreshold && loot->roundRobinPlayer && !GetLootGUID().IsItem() && GetGroup() && GetGroup()->GetLootMethod() == MASTER_LOOT && GetGUID() != GetGroup()->GetMasterLooterGuid())
+    if (!item->is_underthreshold && loot->roundRobinPlayer && !GetLootGUID().IsItem() && GetGroup()
+        && GetGroup()->GetLootMethod() == MASTER_LOOT && GetGUID() != GetGroup()->GetMasterLooterGuid()
+        && item->rollWinnerGUID != GetGUID())
         if (!qitem && !ffaitem && !conditem)
         {
             SendLootRelease(GetLootGUID());

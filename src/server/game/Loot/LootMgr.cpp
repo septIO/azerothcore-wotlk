@@ -462,6 +462,10 @@ bool LootItem::AllowedForPlayer(Player const* player, ObjectGuid source) const
         }
     }
 
+    // Personal loot and won rolls stay with that player, including after the corpse is released.
+    if (rollWinnerGUID && rollWinnerGUID != player->GetGUID())
+        return false;
+
     if (!sScriptMgr->OnAllowedForPlayerLootCheck(player, source))
         return false;
 
@@ -953,7 +957,7 @@ bool Loot::hasOverThresholdItem() const
 {
     for (uint8 i = 0; i < items.size(); ++i)
     {
-        if (!items[i].is_looted && !items[i].is_underthreshold && !items[i].freeforall)
+        if (!items[i].is_looted && !items[i].is_underthreshold && !items[i].freeforall && !items[i].rollWinnerGUID)
             return true;
     }
 
@@ -1061,6 +1065,17 @@ ByteBuffer& operator<<(ByteBuffer& b, LootView const& lv)
                 {
                     if (!l.items[i].is_looted && !l.items[i].freeforall && l.items[i].conditions.empty() && l.items[i].AllowedForPlayer(lv.viewer, l.sourceWorldObjectGUID))
                     {
+                        if (l.items[i].rollWinnerGUID)
+                        {
+                            if (l.items[i].rollWinnerGUID != lv.viewer->GetGUID())
+                                continue;
+
+                            b << uint8(i) << l.items[i];
+                            b << uint8(LOOT_SLOT_TYPE_OWNER);
+                            ++itemsShown;
+                            continue;
+                        }
+
                         if (l.roundRobinPlayer && lv.viewer->GetGUID() != l.roundRobinPlayer)
                             // item shall not be displayed.
                             continue;
