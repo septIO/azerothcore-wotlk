@@ -902,14 +902,19 @@ bool Loot::hasItemForAll() const
     }
 
     for (LootItem const& item : items)
-        if (!item.is_looted && !item.freeforall && item.conditions.empty())
+        if (!item.is_looted && !item.freeforall && item.conditions.empty()
+            && !item.rollWinnerGUID)
             return true;
     return false;
 }
 
-// return true if there is any FFA, quest or conditional item for the player.
+// return true if there is any FFA, quest, conditional, or personal item for the player.
 bool Loot::hasItemFor(Player* player) const
 {
+    for (LootItem const& item : items)
+        if (!item.is_looted && item.rollWinnerGUID == player->GetGUID())
+            return true;
+
     QuestItemMap const& lootPlayerQuestItems = GetPlayerQuestItems();
     QuestItemMap::const_iterator q_itr = lootPlayerQuestItems.find(player->GetGUID());
     if (q_itr != lootPlayerQuestItems.end())
