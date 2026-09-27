@@ -1,26 +1,37 @@
 ---
-description: After a finished change, rebuild and restart by running rebuild-and-restart.sh. Never run it when the only files changed are .lua.
+description: Run rebuild-and-restart.sh only after a finished change that modified at least one non-Lua source file requiring a C++ rebuild. Never run it for Lua-only changes.
 alwaysApply: true
 ---
 
-# Rebuild and restart when the code is ready
+# Rebuild only when required
 
-When an implementation is finished and the code is ready to build, run `rebuild-and-restart.sh` from the repo root with Git Bash before reporting it done. That script stops the servers, rebuilds, refreshes `chaos.conf`, and starts the servers.
+Before running any build or restart command, inspect the files changed by the current task.
 
-Never run this script if the only files you changed are `.lua` files. Lua scripts load without a rebuild, so a Lua-only change is finished once the files are saved.
+## Mandatory decision rule
 
-Do not run it for unfinished work, a change you expect to fail the build, or a task that does not need a rebuild (docs, rules, or questions only).
+If every file changed by the current task ends in `.lua`:
+
+- Do NOT run `rebuild-and-restart.sh`.
+- Do NOT run CMake.
+- Do NOT rebuild manually.
+- Do NOT restart the servers.
+- The task is complete once the Lua files are saved.
+
+Only run `rebuild-and-restart.sh` if the current task changed at least one file that requires the C++ project to be rebuilt, and the implementation is complete and ready to compile.
+
+Do not treat unrelated pre-existing modified files in the repository as changes made by the current task.
+
+## When to run it
+
+Run the script exactly once when all of the following are true:
+
+1. The implementation is finished.
+2. At least one file changed by the current task requires a C++ rebuild.
+3. The code is expected to compile.
+4. The task is not documentation-, rule-, configuration-, or question-only work that does not require a rebuild.
+
+Run from the repository root with Git Bash:
 
 ```powershell
 & "C:\Program Files\Git\bin\bash.exe" "C:/AzerothCore/rebuild-and-restart.sh"
 ```
-
-```text
-❌ Run the script while the change is still incomplete
-❌ Run the script when the only changes are .lua files
-❌ cmake, or a rebuild by hand instead of the script
-✅ Run the script once the change is ready to compile
-✅ Skip the script when every changed file ends in .lua
-```
-
-If the script fails, stop. Do not start the servers another way.
