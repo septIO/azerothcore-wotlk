@@ -139,6 +139,31 @@ void ScriptMgr::OnUnitSetShapeshiftForm(Unit* unit, uint8 form)
     CALL_ENABLED_HOOKS(UnitScript, UNITHOOK_ON_UNIT_SET_SHAPESHIFT_FORM, script->OnUnitSetShapeshiftForm(unit, form));
 }
 
+bool ScriptMgr::OnCreatureLevelForTarget(Creature const* creature, WorldObject const* target, uint8& level)
+{
+    CALL_ENABLED_BOOLEAN_HOOKS_WITH_DEFAULT_FALSE(UnitScript, UNITHOOK_ON_CREATURE_LEVEL_FOR_TARGET, script->OnCreatureLevelForTarget(creature, target, level));
+}
+
+void ScriptMgr::ModifyArmorReduction(Unit const* attacker, Unit const* victim, float& armor)
+{
+    CALL_ENABLED_HOOKS(UnitScript, UNITHOOK_MODIFY_ARMOR_REDUCTION, script->ModifyArmorReduction(attacker, victim, armor));
+}
+
+void ScriptMgr::ModifyResistance(Unit const* attacker, Unit const* victim, uint32 schoolMask, float& resistance)
+{
+    CALL_ENABLED_HOOKS(UnitScript, UNITHOOK_MODIFY_RESISTANCE, script->ModifyResistance(attacker, victim, schoolMask, resistance));
+}
+
+bool ScriptMgr::ShouldPersonalizeCombatLog(Unit const* source, Unit const* target)
+{
+    CALL_ENABLED_BOOLEAN_HOOKS_WITH_DEFAULT_FALSE(UnitScript, UNITHOOK_SHOULD_PERSONALIZE_COMBAT_LOG, script->ShouldPersonalizeCombatLog(source, target));
+}
+
+void ScriptMgr::PersonalizeCombatLog(Unit const* source, Unit const* target, Player const* viewer, float& scale)
+{
+    CALL_ENABLED_HOOKS(UnitScript, UNITHOOK_PERSONALIZE_COMBAT_LOG, script->PersonalizeCombatLog(source, target, viewer, scale));
+}
+
 UnitScript::UnitScript(char const* name, bool addToScripts, std::vector<uint16> enabledHooks)
     : ScriptObject(name, UNITHOOK_END)
 {

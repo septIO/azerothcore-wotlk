@@ -582,6 +582,11 @@ public: /* UnitScript */
     void OnUnitExitCombat(Unit* unit);
     void OnUnitDeath(Unit* unit, Unit* killer);
     void OnUnitSetShapeshiftForm(Unit* unit, uint8 form);
+    bool OnCreatureLevelForTarget(Creature const* creature, WorldObject const* target, uint8& level);
+    void ModifyArmorReduction(Unit const* attacker, Unit const* victim, float& armor);
+    void ModifyResistance(Unit const* attacker, Unit const* victim, uint32 schoolMask, float& resistance);
+    bool ShouldPersonalizeCombatLog(Unit const* source, Unit const* target);
+    void PersonalizeCombatLog(Unit const* source, Unit const* target, Player const* viewer, float& scale);
 
 public: /* MovementHandlerScript */
     void OnPlayerMove(Player* player, MovementInfo movementInfo, uint32 opcode);

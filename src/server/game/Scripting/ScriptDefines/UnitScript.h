@@ -44,6 +44,11 @@ enum UnitHook
     UNITHOOK_ON_UNIT_EXIT_COMBAT,
     UNITHOOK_ON_UNIT_DEATH,
     UNITHOOK_ON_UNIT_SET_SHAPESHIFT_FORM,
+    UNITHOOK_ON_CREATURE_LEVEL_FOR_TARGET,
+    UNITHOOK_MODIFY_ARMOR_REDUCTION,
+    UNITHOOK_MODIFY_RESISTANCE,
+    UNITHOOK_SHOULD_PERSONALIZE_COMBAT_LOG,
+    UNITHOOK_PERSONALIZE_COMBAT_LOG,
     UNITHOOK_END
 };
 
@@ -110,6 +115,17 @@ public:
     virtual void OnUnitExitCombat(Unit* /*unit*/) { }
     virtual void OnUnitDeath(Unit* /*unit*/, Unit* /*killer*/) { }
     virtual void OnUnitSetShapeshiftForm(Unit* /*unit*/, uint8 /*form*/) { }
+
+    // Return true and write level to use this creature's effective level against target.
+    [[nodiscard]] virtual bool OnCreatureLevelForTarget(Creature const* /*creature*/, WorldObject const* /*target*/, uint8& /*level*/) { return false; }
+
+    virtual void ModifyArmorReduction(Unit const* /*attacker*/, Unit const* /*victim*/, float& /*armor*/) { }
+
+    virtual void ModifyResistance(Unit const* /*attacker*/, Unit const* /*victim*/, uint32 /*schoolMask*/, float& /*resistance*/) { }
+
+    [[nodiscard]] virtual bool ShouldPersonalizeCombatLog(Unit const* /*source*/, Unit const* /*target*/) { return false; }
+
+    virtual void PersonalizeCombatLog(Unit const* /*source*/, Unit const* /*target*/, Player const* /*viewer*/, float& /*scale*/) { }
 };
 
 #endif

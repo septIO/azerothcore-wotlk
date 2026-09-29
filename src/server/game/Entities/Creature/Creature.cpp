@@ -3202,6 +3202,13 @@ void Creature::AllLootRemovedFromCorpse()
 
 uint8 Creature::getLevelForTarget(WorldObject const* target) const
 {
+    if (target)
+    {
+        uint8 scaledLevel = 0;
+        if (sScriptMgr->OnCreatureLevelForTarget(this, target, scaledLevel))
+            return scaledLevel;
+    }
+
     if (!isWorldBoss() || !target->ToUnit())
         return Unit::getLevelForTarget(target);
 

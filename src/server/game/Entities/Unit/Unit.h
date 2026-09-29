@@ -2115,6 +2115,8 @@ public:
     uint16 m_delayed_unit_ai_notify_timer;
     bool bRequestForcedVisibilityUpdate;
 
+    void InvalidateValuesUpdateCache() { _valuesUpdateCache.clear(); }
+
     // Movement info
     Movement::MoveSpline* movespline;
 
@@ -2227,7 +2229,6 @@ private:
     [[nodiscard]] uint32 GetCombatRatingDamageReduction(CombatRating cr, float rate, float cap, uint32 damage) const;
 
     void PatchValuesUpdate(ByteBuffer& valuesUpdateBuf, BuildValuesCachePosPointers& posPointers, Player* target);
-    void InvalidateValuesUpdateCache() { _valuesUpdateCache.clear(); }
 
     [[nodiscard]] float processDummyAuras(float TakenTotalMod) const;
 
