@@ -4867,20 +4867,6 @@ void Spell::SendPetCastResult(SpellCastResult result)
     player->SendDirectMessage(&data);
 }
 
-void Spell::SendClientSpellPacket(WorldPacket& data, std::size_t spellIdPosition)
-{
-    Player* playerCaster = m_caster->ToPlayer();
-    if (!playerCaster || m_clientSpellId == m_spellInfo->Id)
-    {
-        m_caster->SendMessageToSet(&data, true);
-        return;
-    }
-
-    m_caster->SendMessageToSet(&data, false);
-    data.put<uint32>(spellIdPosition, m_spellInfo->Id);
-    playerCaster->SendDirectMessage(&data);
-}
-
 void Spell::SendSpellStart()
 {
     Unit* unitCaster = m_caster->ToUnit();
@@ -4938,7 +4924,6 @@ void Spell::SendSpellStart()
 
     data << realCasterGUID;
     data << uint8(m_cast_count);                            // pending spell cast?
-    std::size_t const spellIdPosition = data.wpos();
     data << uint32(m_clientSpellId);                        // spellId
     data << uint32(castFlags);                              // cast flags
     data << int32(m_timer);                                 // delay?
@@ -4957,7 +4942,7 @@ void Spell::SendSpellStart()
         data << uint32(0);
     }
 
-    SendClientSpellPacket(data, spellIdPosition);
+    m_caster->SendMessageToSet(&data, true);
 
     if (!m_spellInfo->IsChanneled() && unitCaster && unitCaster->IsPlayer() && unitCaster->ToPlayer()->NeedSendSpectatorData())
         ArenaSpectator::SendCommand_Spell(unitCaster->FindMap(), unitCaster->GetGUID(), "SPE", m_spellInfo->Id, m_timer);
@@ -5347,18 +5332,16 @@ void Spell::SendInterrupted(uint8 result)
     WorldPacket data(SMSG_SPELL_FAILURE, (8 + 1 + 4 + 1));
     data << m_caster->GetPackGUID();
     data << uint8(m_cast_count);
-    std::size_t spellIdPosition = data.wpos();
     data << uint32(m_clientSpellId);
     data << uint8(result);
-    SendClientSpellPacket(data, spellIdPosition);
+    m_caster->SendMessageToSet(&data, true);
 
     data.Initialize(SMSG_SPELL_FAILED_OTHER, (8 + 1 + 4 + 1));
     data << m_caster->GetPackGUID();
     data << uint8(m_cast_count);
-    spellIdPosition = data.wpos();
     data << uint32(m_clientSpellId);
     data << uint8(result);
-    SendClientSpellPacket(data, spellIdPosition);
+    m_caster->SendMessageToSet(&data, true);
 }
 
 void Spell::SendChannelUpdate(uint32 time)
@@ -5393,11 +5376,10 @@ void Spell::SendChannelStart(uint32 duration)
 
     WorldPacket data(MSG_CHANNEL_START, (8 + 4 + 4));
     data << m_caster->GetPackGUID();
-    std::size_t const spellIdPosition = data.wpos();
     data << uint32(m_clientSpellId);
     data << uint32(duration);
 
-    SendClientSpellPacket(data, spellIdPosition);
+    m_caster->SendMessageToSet(&data, true);
 
     if (unitCaster->IsPlayer() && unitCaster->ToPlayer()->NeedSendSpectatorData())
         ArenaSpectator::SendCommand_Spell(unitCaster->FindMap(), unitCaster->GetGUID(), "SPE", m_spellInfo->Id, -((int32)duration));
@@ -5406,7 +5388,7 @@ void Spell::SendChannelStart(uint32 duration)
     if (channelTarget)
         unitCaster->SetGuidValue(UNIT_FIELD_CHANNEL_OBJECT, channelTarget);
 
-    unitCaster->SetUInt32Value(UNIT_CHANNEL_SPELL, m_spellInfo->Id);
+    unitCaster->SetUInt32Value(UNIT_CHANNEL_SPELL, m_clientSpellId);
 }
 
 void Spell::SendResurrectRequest(Player* target)

@@ -509,7 +509,6 @@ public:
     static void SendCastResult(Player* caster, SpellInfo const* spellInfo, uint8 castCount, SpellCastResult result, SpellCustomErrors customError = SPELL_CUSTOM_ERROR_NONE);
     void SendCastResult(SpellCastResult result);
     void SendPetCastResult(SpellCastResult result);
-    void SendClientSpellPacket(WorldPacket& data, std::size_t spellIdPosition);
     void SendSpellStart();
     void SendSpellGo();
 
