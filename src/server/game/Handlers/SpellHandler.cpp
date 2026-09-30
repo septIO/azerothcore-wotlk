@@ -571,8 +571,11 @@ void WorldSession::HandleCancelAuraOpcode(WorldPacket& recvPacket)
     recvPacket >> spellId;
 
     if (Spell* curSpell = _player->GetCurrentSpell(CURRENT_CHANNELED_SPELL))
-        if (curSpell->GetClientSpellId() == spellId)
+        if (curSpell->GetSpellInfo()->Id == spellId || curSpell->GetClientSpellId() == spellId)
         {
+            if (curSpell->GetSpellInfo()->HasAttribute(SPELL_ATTR0_NO_AURA_CANCEL))
+                return;
+
             _player->InterruptSpell(CURRENT_CHANNELED_SPELL);
             return;
         }
@@ -589,12 +592,7 @@ void WorldSession::HandleCancelAuraOpcode(WorldPacket& recvPacket)
 
     // channeled spell case (it currently casted then)
     if (spellInfo->IsChanneled())
-    {
-        if (Spell* curSpell = _player->GetCurrentSpell(CURRENT_CHANNELED_SPELL))
-            if (curSpell->m_spellInfo->Id == spellId || curSpell->GetClientSpellId() == spellId)
-                _player->InterruptSpell(CURRENT_CHANNELED_SPELL);
         return;
-    }
 
     // non channeled case:
     // don't allow remove non positive spells
@@ -669,23 +667,13 @@ void WorldSession::HandleCancelChanneling(WorldPacket& recvData)
         return;
     }
 
-    SpellInfo const* spellInfo = sSpellMgr->GetSpellInfo(spellID);
-    if (!spellInfo)
-    {
+    Spell* spell = mover->GetCurrentSpell(CURRENT_CHANNELED_SPELL);
+    if (!spell || (spell->GetSpellInfo()->Id != spellID && spell->GetClientSpellId() != spellID))
         return;
-    }
 
     // not allow remove spells with attr SPELL_ATTR0_NO_AURA_CANCEL
-    if (spellInfo->HasAttribute(SPELL_ATTR0_NO_AURA_CANCEL))
-    {
+    if (spell->GetSpellInfo()->HasAttribute(SPELL_ATTR0_NO_AURA_CANCEL))
         return;
-    }
-
-    Spell* spell = mover->GetCurrentSpell(CURRENT_CHANNELED_SPELL);
-    if (!spell || spell->GetSpellInfo()->Id != spellInfo->Id)
-    {
-        return;
-    }
 
     mover->InterruptSpell(CURRENT_CHANNELED_SPELL);
 }
