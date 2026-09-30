@@ -1204,11 +1204,15 @@ void WorldSession::HandleFarSightOpcode(WorldPacket& recvData)
         WorldObject* newFarsightobject = nullptr;
         if (WorldObject* viewpoint = _player->GetViewpoint())
         {
+            uint32 channelSpellId = _player->GetUInt32Value(UNIT_CHANNEL_SPELL);
+            if (Spell const* channel = _player->GetCurrentSpell(CURRENT_CHANNELED_SPELL))
+                channelSpellId = channel->GetSpellInfo()->Id;
+
             if (DynamicObject* viewpointDynamicObject = viewpoint->ToDynObject())
             {
                 newFarsightobject = ObjectAccessor::GetUnit(*viewpointDynamicObject, viewpointDynamicObject->GetOldFarsightGUID());
             }
-            else if (DynamicObject* viewpointDynamicObject = _player->GetDynObject(_player->GetUInt32Value(UNIT_CHANNEL_SPELL)))
+            else if (DynamicObject* viewpointDynamicObject = _player->GetDynObject(channelSpellId))
             {
                 if (viewpointDynamicObject->IsViewpoint() && viewpointDynamicObject->GetCasterGUID() == _player->GetGUID())
                 {

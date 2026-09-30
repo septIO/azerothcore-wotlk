@@ -607,6 +607,7 @@ SpellValue::SpellValue(SpellInfo const* proto)
 
 Spell::Spell(WorldObject* caster, SpellInfo const* info, TriggerCastFlags triggerFlags, ObjectGuid originalCasterGUID, bool skipCheck) :
     m_spellInfo(sSpellMgr->GetSpellForDifficultyFromSpell(info, caster)),
+    m_clientSpellId(m_spellInfo->Id),
     m_caster((info->HasAttribute(SPELL_ATTR6_ORIGINATE_FROM_CONTROLLER) && caster->ToUnit() && caster->ToUnit()->GetCharmerOrOwner()) ? caster->ToUnit()->GetCharmerOrOwner() : caster)
     , m_spellValue(new SpellValue(m_spellInfo)), _spellEvent(nullptr)
 {
@@ -3624,6 +3625,10 @@ SpellCastResult Spell::prepare(SpellCastTargets const* targets, AuraEffect const
 
     LoadScripts();
 
+    sScriptMgr->OnClientSpellId(this, m_clientSpellId);
+    if (!sSpellMgr->GetSpellInfo(m_clientSpellId))
+        m_clientSpellId = m_spellInfo->Id;
+
     OnSpellLaunch();
 
     m_powerCost = m_CastItem ? 0 : m_spellInfo->CalcPowerCost(m_caster, m_spellSchoolMask, this);
@@ -4919,7 +4924,7 @@ void Spell::SendSpellStart()
 
     data << realCasterGUID;
     data << uint8(m_cast_count);                            // pending spell cast?
-    data << uint32(m_spellInfo->Id);                        // spellId
+    data << uint32(m_clientSpellId);                        // spellId
     data << uint32(castFlags);                              // cast flags
     data << int32(m_timer);                                 // delay?
 
@@ -5019,7 +5024,7 @@ void Spell::SendSpellGo()
 
     data << realCasterGUID;
     data << uint8(m_cast_count);                            // pending spell cast?
-    data << uint32(m_spellInfo->Id);                        // spellId
+    data << uint32(m_clientSpellId);                        // spellId
     data << uint32(castFlags);                              // cast flags
     data << uint32(GameTime::GetGameTimeMS().count());                 // timestamp
 
@@ -5327,14 +5332,14 @@ void Spell::SendInterrupted(uint8 result)
     WorldPacket data(SMSG_SPELL_FAILURE, (8 + 1 + 4 + 1));
     data << m_caster->GetPackGUID();
     data << uint8(m_cast_count);
-    data << uint32(m_spellInfo->Id);
+    data << uint32(m_clientSpellId);
     data << uint8(result);
     m_caster->SendMessageToSet(&data, true);
 
     data.Initialize(SMSG_SPELL_FAILED_OTHER, (8 + 1 + 4 + 1));
     data << m_caster->GetPackGUID();
     data << uint8(m_cast_count);
-    data << uint32(m_spellInfo->Id);
+    data << uint32(m_clientSpellId);
     data << uint8(result);
     m_caster->SendMessageToSet(&data, true);
 }
@@ -5371,7 +5376,7 @@ void Spell::SendChannelStart(uint32 duration)
 
     WorldPacket data(MSG_CHANNEL_START, (8 + 4 + 4));
     data << m_caster->GetPackGUID();
-    data << uint32(m_spellInfo->Id);
+    data << uint32(m_clientSpellId);
     data << uint32(duration);
 
     m_caster->SendMessageToSet(&data, true);
@@ -5383,7 +5388,7 @@ void Spell::SendChannelStart(uint32 duration)
     if (channelTarget)
         unitCaster->SetGuidValue(UNIT_FIELD_CHANNEL_OBJECT, channelTarget);
 
-    unitCaster->SetUInt32Value(UNIT_CHANNEL_SPELL, m_spellInfo->Id);
+    unitCaster->SetUInt32Value(UNIT_CHANNEL_SPELL, m_clientSpellId);
 }
 
 void Spell::SendResurrectRequest(Player* target)

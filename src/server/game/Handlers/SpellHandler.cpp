@@ -570,6 +570,13 @@ void WorldSession::HandleCancelAuraOpcode(WorldPacket& recvPacket)
     uint32 spellId;
     recvPacket >> spellId;
 
+    if (Spell* curSpell = _player->GetCurrentSpell(CURRENT_CHANNELED_SPELL))
+        if (curSpell->GetClientSpellId() == spellId)
+        {
+            _player->InterruptSpell(CURRENT_CHANNELED_SPELL);
+            return;
+        }
+
     SpellInfo const* spellInfo = sSpellMgr->GetSpellInfo(spellId);
     if (!spellInfo)
         return;
@@ -584,7 +591,7 @@ void WorldSession::HandleCancelAuraOpcode(WorldPacket& recvPacket)
     if (spellInfo->IsChanneled())
     {
         if (Spell* curSpell = _player->GetCurrentSpell(CURRENT_CHANNELED_SPELL))
-            if (curSpell->m_spellInfo->Id == spellId)
+            if (curSpell->m_spellInfo->Id == spellId || curSpell->GetClientSpellId() == spellId)
                 _player->InterruptSpell(CURRENT_CHANNELED_SPELL);
         return;
     }

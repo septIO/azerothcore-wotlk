@@ -661,6 +661,7 @@ public: /* SpellSC */
     void OnSpellCastCancel(Spell* spell, Unit* caster, SpellInfo const* spellInfo, bool bySelf);
     void OnSpellCast(Spell* spell, Unit* caster, SpellInfo const* spellInfo, bool skipCheck);
     void OnSpellPrepare(Spell* spell, Unit* caster, SpellInfo const* spellInfo);
+    void OnClientSpellId(Spell* spell, uint32& spellId);
 
 public: /* GameEventScript */
     void OnGameEventStart(uint16 EventID);

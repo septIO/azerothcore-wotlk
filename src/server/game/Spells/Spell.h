@@ -533,6 +533,7 @@ public:
     void HandleThreatSpells();
 
     SpellInfo const* const m_spellInfo;
+    uint32 m_clientSpellId;
     Item* m_CastItem;
     Item* m_weaponItem;
     ObjectGuid m_castItemGUID;
@@ -594,6 +595,7 @@ public:
     Unit* GetUnitCasterForEffectHandlers() const;
     Unit* GetOriginalTarget() const;
     SpellInfo const* GetSpellInfo() const { return m_spellInfo; }
+    uint32 GetClientSpellId() const { return m_clientSpellId; }
     int32 GetPowerCost() const { return m_powerCost; }
 
     bool UpdatePointers();                              // must be used at call Spell code after time delay (non triggered spell cast/update spell call/etc)

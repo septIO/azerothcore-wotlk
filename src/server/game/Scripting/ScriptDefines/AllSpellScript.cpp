@@ -94,6 +94,11 @@ void ScriptMgr::OnSpellPrepare(Spell* spell, Unit* caster, SpellInfo const* spel
     CALL_ENABLED_HOOKS(AllSpellScript, ALLSPELLHOOK_ON_PREPARE, script->OnSpellPrepare(spell, caster, spellInfo));
 }
 
+void ScriptMgr::OnClientSpellId(Spell* spell, uint32& spellId)
+{
+    CALL_ENABLED_HOOKS(AllSpellScript, ALLSPELLHOOK_ON_CLIENT_SPELL_ID, script->OnClientSpellId(spell, spellId));
+}
+
 AllSpellScript::AllSpellScript(char const* name, std::vector<uint16> enabledHooks)
     : ScriptObject(name, ALLSPELLHOOK_END)
 {

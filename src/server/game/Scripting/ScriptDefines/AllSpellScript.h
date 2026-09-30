@@ -37,6 +37,7 @@ enum AllSpellHook
     ALLSPELLHOOK_ON_CAST_CANCEL,
     ALLSPELLHOOK_ON_CAST,
     ALLSPELLHOOK_ON_PREPARE,
+    ALLSPELLHOOK_ON_CLIENT_SPELL_ID,
     ALLSPELLHOOK_ON_IS_AURA_EXCLUSIVE_BY_SPECIFIC_WITH,
     ALLSPELLHOOK_END
 };
@@ -106,6 +107,14 @@ public:
     virtual void OnSpellCast(Spell* /*spell*/, Unit* /*caster*/, SpellInfo const* /*spellInfo*/, bool /*skipCheck*/) { }
 
     virtual void OnSpellPrepare(Spell* /*spell*/, Unit* /*caster*/, SpellInfo const* /*spellInfo*/) { }
+
+    /**
+     * @brief Allows scripts to replace the spell ID presented to clients without changing server-side spell behavior.
+     *
+     * The selected ID is cached for the lifetime of the cast and used for its start, go, interruption, and channel
+     * packets. The replacement spell must exist in the client and server DBC files.
+     */
+    virtual void OnClientSpellId(Spell* /*spell*/, uint32& /*spellId*/) { }
 };
 
 // Compatibility for old scripts

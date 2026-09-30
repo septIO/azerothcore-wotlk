@@ -4057,15 +4057,21 @@ bool Unit::IsNonMeleeSpellCast(bool withDelayed, bool skipChanneled, bool skipAu
 void Unit::InterruptNonMeleeSpells(bool withDelayed, uint32 spell_id, bool withInstant, bool bySelf)
 {
     // generic spells are interrupted if they are not finished or delayed
-    if (m_currentSpells[CURRENT_GENERIC_SPELL] && (!spell_id || m_currentSpells[CURRENT_GENERIC_SPELL]->m_spellInfo->Id == spell_id))
+    if (m_currentSpells[CURRENT_GENERIC_SPELL] && (!spell_id ||
+            m_currentSpells[CURRENT_GENERIC_SPELL]->m_spellInfo->Id == spell_id ||
+            m_currentSpells[CURRENT_GENERIC_SPELL]->GetClientSpellId() == spell_id))
         InterruptSpell(CURRENT_GENERIC_SPELL, withDelayed, withInstant, bySelf);
 
     // autorepeat spells are interrupted if they are not finished or delayed
-    if (m_currentSpells[CURRENT_AUTOREPEAT_SPELL] && (!spell_id || m_currentSpells[CURRENT_AUTOREPEAT_SPELL]->m_spellInfo->Id == spell_id))
+    if (m_currentSpells[CURRENT_AUTOREPEAT_SPELL] && (!spell_id ||
+            m_currentSpells[CURRENT_AUTOREPEAT_SPELL]->m_spellInfo->Id == spell_id ||
+            m_currentSpells[CURRENT_AUTOREPEAT_SPELL]->GetClientSpellId() == spell_id))
         InterruptSpell(CURRENT_AUTOREPEAT_SPELL, withDelayed, withInstant, bySelf);
 
     // channeled spells are interrupted if they are not finished, even if they are delayed
-    if (m_currentSpells[CURRENT_CHANNELED_SPELL] && (!spell_id || m_currentSpells[CURRENT_CHANNELED_SPELL]->m_spellInfo->Id == spell_id))
+    if (m_currentSpells[CURRENT_CHANNELED_SPELL] && (!spell_id ||
+            m_currentSpells[CURRENT_CHANNELED_SPELL]->m_spellInfo->Id == spell_id ||
+            m_currentSpells[CURRENT_CHANNELED_SPELL]->GetClientSpellId() == spell_id))
         InterruptSpell(CURRENT_CHANNELED_SPELL, true, true, bySelf);
 }
 
