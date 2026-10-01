@@ -20,6 +20,7 @@
 #include "Log.h"
 #include "ObjectMgr.h"
 #include "Player.h"
+#include "ScriptMgr.h"
 #include "UpdateData.h"
 
 Bag::Bag(): Item()
@@ -118,6 +119,7 @@ bool Bag::LoadFromDB(ObjectGuid::LowType guid, ObjectGuid owner_guid, Field* fie
         m_bagslot[i] = nullptr;
     }
 
+    sScriptMgr->OnBagLoadFromDB(this);
     return true;
 }
 

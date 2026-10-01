@@ -110,6 +110,16 @@ bool ScriptMgr::OnCastItemCombatSpell(Player* player, Unit* victim, SpellInfo co
     return tempScript ? tempScript->OnCastItemCombatSpell(player, victim, spellInfo, item) : true;
 }
 
+void ScriptMgr::OnBagLoadFromDB(Bag* bag)
+{
+    ASSERT(bag);
+
+    ExecuteScript<AllItemScript>([&](AllItemScript* script)
+    {
+        script->OnBagLoadFromDB(bag);
+    });
+}
+
 void ScriptMgr::OnGossipSelect(Player* player, Item* item, uint32 sender, uint32 action)
 {
     ASSERT(player);

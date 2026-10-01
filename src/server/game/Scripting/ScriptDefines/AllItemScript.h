@@ -20,6 +20,8 @@
 
 #include "ScriptObject.h"
 
+class Bag;
+
 class AllItemScript : public ScriptObject
 {
 protected:
@@ -37,6 +39,9 @@ public:
 
     // Called when the item expires (is destroyed).
     [[nodiscard]] virtual bool CanItemExpire(Player* /*player*/, ItemTemplate const* /*proto*/) { return true; }
+
+    // Called after a bag has loaded its template slot count from the database.
+    virtual void OnBagLoadFromDB(Bag* /*bag*/) { }
 
     // Called when a player selects an option in an item gossip window
     virtual void OnItemGossipSelect(Player* /*player*/, Item* /*item*/, uint32 /*sender*/, uint32 /*action*/) { }
